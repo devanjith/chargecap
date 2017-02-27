@@ -1,0 +1,36 @@
+#!/system/bin/sh
+#stop charging at a certain level
+
+set -e
+
+BATTERY=/sys/class/power_supply/battery;
+CHR_ENABLED=$BATTERY/charging_enabled;
+CAP=$BATTERY/capacity;
+LIM_CAP=80;
+
+usage(){
+    echo -ne "\n\tusage: $0 [-b <battery_location>] [-l <stop capacity>]\n\n";
+    exit 1;
+}
+
+while getopts ":b:l:h" opt; do
+    case "$opt" in
+        b) BATTERY=$OPTARG ;;
+        l) LIM_CAP=$OPTARG ;;
+        :|\?) usage ;;
+    esac
+done
+shift $((OPTIND-1));
+
+trap "echo 1 > $CHR_ENABLED; exit;" SIGINT SIGTERM
+
+while true; do
+    if [ `cat $CAP` -gt $LIM_CAP ]; then
+        echo 0 > $CHR_ENABLED;
+    else
+        echo 1 > $CHR_ENABLED;
+    fi
+    sleep 5;
+done
+
+exit;
