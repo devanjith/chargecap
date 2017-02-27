@@ -1,5 +1,5 @@
 # chargecap
-stop charging android at a desired level
+stop charging android beyond a desired level
 
 _chargecap_ is a shellscript that stops charging your battery beyond given capacity. needs root.
 
